@@ -1,30 +1,43 @@
-import React, { useState } from "react";
-import { data } from './data'; // If you're importing from a file
-import './Table.css'; // Import the CSS file
+import React, { useState, useEffect } from "react";
+import axios from "axios"; /* axios used for a JavaScript library that allows developers to make HTTP requests to APIs and other external resources in React*/
+import './Table.css'; 
 
 function Table() {
+    const [data, setData] = useState([]); // Dynamic data from API
     const [search, setSearch] = useState(""); // Search state
     const [currentPage, setCurrentPage] = useState(1); // Current page
     const rowsPerPage = 4; // Number of rows per page
 
-    // Pagination logic
+    // Fetch data from API
+    useEffect(() => {
+        axios.get("https://6770d5aa2ffbd37a63cd9b1a.mockapi.io/api/data/users")
+            .then(response => {
+                console.log(response.data); // Log the data
+                setData(response.data);
+            })
+            .catch(error => console.error("Error fetching data:", error));
+    }, []);
+    
+    // Pagination logic to forward and backward the pages here i am using this comments
     const startIndex = (currentPage - 1) * rowsPerPage;
     const endIndex = startIndex + rowsPerPage;
 
-    // Search and Filter Logic
+    // Search and Filter Logic coding...!
     const filteredData = data.filter((item) => {
         const searchTerm = search.toLowerCase();
         return (
             search === "" ||
-            item.first_name.toLowerCase().includes(searchTerm) ||
-            item.last_name.toLowerCase().includes(searchTerm) ||
-            item.email.toLowerCase().includes(searchTerm) ||
-            item.Number.includes(searchTerm)
+            item.first_name?.toLowerCase().includes(searchTerm) ||
+            item.last_name?.toLowerCase().includes(searchTerm) ||
+            item.email?.toLowerCase().includes(searchTerm) ||
+            item.Number?.includes(searchTerm)
         );
     });
 
     const currentData = filteredData.slice(startIndex, endIndex);
     const totalPages = Math.ceil(filteredData.length / rowsPerPage);
+
+    /* Here is the html and bootstrap*/
 
     return (
         <div className="table-container">
@@ -37,7 +50,7 @@ function Table() {
                         className="search-input"
                         value={search}
                         onChange={(e) => {
-                            setSearch(e.target.value); // Update search term
+                            setSearch(e.target.value); // Update search term in the table
                             setCurrentPage(1); // Reset to the first page on a new search
                         }} 
                     />
